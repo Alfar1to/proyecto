@@ -1,20 +1,64 @@
 //API key: 5db51dbd
-const fetchData = async(searchTerm)=> {
-    const response = await axios.get('http://omdbapi.com/', {
-        params: {
-            apikey:'5db51dbd',
-            s: 'avengers'
-        }
-    })
+//const fetchData = async(searchTerm)=> {
+//    const response = await axios.get('http://omdbapi.com/', {
+//        params: {
+//            apikey:'5db51dbd',
+//            s: 'avengers'
+//        }
+//    })
 
-    if(response.data.Error){
-        return []
-    }
+//    if(response.data.Error){
+//        return []
+//    }
 
-    console.log(response.data.Search)
-}
+//    console.log(response.data.Search)
+//}
 
 //fetchData()
+
+autoCompleteConfig ={
+    rederOption(movie){
+        const imgSrc=movie.Poster === 'N/A' ? '': movie.Poster
+        return`
+        <img src="${imgSrc}"/>
+        ${movie.Title} (${movie.Year})
+        `
+    },
+    inputValue(movie){
+        return movie.Title
+    },
+    async fetchData(searchTerm){
+        apiMovieURL='http://www.omdbapi.com/'
+        const response = await axios.get(apiMovieURL, {
+            params:'5db51dbd',
+            s: searchTerm
+        })
+        if(response.data.Error){
+            return[]
+        }
+        console.log(response.data)
+        return response.data.Search
+    }
+}
+createAutocomplete({
+    ...autoCompleteConfig,
+    root: document.querySelector('#left-autocomplete'),
+    onOptionSelect(Movie){
+        document.querySelector('.tutorial').classList.add('is-hidden')
+        onMovieSelect(movie, document.querySelector('#left-summery'), 'left')
+    }
+})
+createAutocomplete({
+    ...autoCompleteConfig,
+    root: document.querySelector('#right-autocomplete'),
+    onOptionSelect(Movie){
+        document.querySelector('.tutorial').classList.add('is-hidden')
+        onMovieSelect(movie, document.querySelector('#right-summery'), 'right')
+    }
+})
+
+
+
 const root=document.querySelector('.autocomplete')
 root.innerHTML = `
     <label><b>Busqueda de Peliculas</b></label>
